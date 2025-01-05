@@ -1,0 +1,62 @@
+const express = require("express");
+
+const app = express();
+
+// This route only match with get call
+app.get("/test", (req,res)=>{
+    res.send("Hi this is from test of server get data");
+})
+app.post("/test", (req,res)=>{
+    res.send("Hi this is from test of server post data");
+})
+
+app.put("/test", (req,res)=>{
+    res.send("Hi this is from test of server put data");
+})
+
+app.delete("/test", (req,res)=>{
+    res.send("Hi this is from test of server delete data");
+})
+
+// regex - 
+// /ab+c
+// /ab?c
+// /(ab)?c
+// /a/ 
+// /.*fly$/
+
+// getting user request using it 
+// url - http://localhost:7777/test2/76/shlok
+app.get("/test2/:age/:name", (req,res)=>{
+    console.log(req.params);
+    res.send("Hi this is from test of server request data");
+})
+
+// getting dynamically data using -
+// url - http://localhost:7777/test3?age=76&name="shlok"
+// & - use for next line data
+// '?' - use for query
+// '=' - assign value to query data name , age ---etc
+app.get("/test3", (req,res)=>{
+    console.log(req.query);
+    res.send("Hi this is from test of server query data");
+})
+
+
+// This will match all the HTTP method like post, get ... etc
+app.use("/test", (req,res)=>{
+    res.send("Hi this is from test of server");
+})
+
+app.use("/test2", (req,res)=>{
+    res.send("Hi this is from test2 of server");
+})
+
+
+app.use("/hello", (req,res)=>{
+    res.send("Hi this is from Hello of server");
+})
+
+app.listen("7777", ()=>{
+console.log("Server is listening on 7777");
+})

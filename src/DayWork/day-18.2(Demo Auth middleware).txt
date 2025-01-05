@@ -1,0 +1,43 @@
+const express = require("express");
+
+const app = express();
+// const {adminAuth, userAuth} = require("./middlewares/auth");
+
+const adminAuth = (req,res,next)=>{
+    const token = "xyz";
+    const adminAuthorization = token === "xyz";
+    if(!adminAuthorization){
+        res.status(501).send("You are not a admin so you can't");
+    }else{
+        next();
+    }
+}
+
+const userAuth = (req,res,next)=>{
+    const token = "xyz";
+    const isUserAuthorization = token === "xyz";
+    if(!isUserAuthorization){
+        res.status(501).send("You are not a vaild user so you can't");
+    }else{
+        next();
+    }
+}
+
+// we can use "/admin" --> because we want to chk all time in admin autherization for doing any work related to admin
+
+app.use("/admin", adminAuth);
+
+app.get("/admin/data",(req, res)=>{
+    res.send("This is the whole admin data");
+})
+
+app.get("/admin/power", (req,res)=>{
+    res.send("This is all admin powers");
+})
+
+app.get("/userData",userAuth, (req,res)=>{
+    res.send("This is the whole user data");
+})
+app.listen("7777", ()=>{
+console.log("Server is listening on 7777");
+})

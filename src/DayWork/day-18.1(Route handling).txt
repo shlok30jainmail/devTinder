@@ -1,0 +1,32 @@
+const express = require("express");
+
+const app = express();
+
+// route handling 
+app.use("/test", (req, res, next)=>{
+   console.log("This is first route handler");
+   res.send("Hi I am a first route handler");
+   next();
+},
+(req, res)=>{
+    console.log("This is second route handler"); // heve above route handler is working like a middle for it
+    // res.send("Hi I am a second route handler");
+}
+);
+
+// if we use app.use first then how can we get the data from get method becuase we know app.use show the data in each method get, put, delete...
+ // answer - we can use next in app.use
+
+ app.use("/", (req,res, next)=>{
+    // res.send("This is route"); 
+    next();
+    // it will be true in each case so in postman we get all time - " This is route", but if want to send get, post... data so first method is we can write app.use data in the below of this code and second method is we can use next() function at here
+ });
+
+ app.get("/main", (req, res)=>{
+    res.send("It is a main route"); 
+ })
+
+app.listen("7777", ()=>{
+console.log("Server is listening on 7777");
+})

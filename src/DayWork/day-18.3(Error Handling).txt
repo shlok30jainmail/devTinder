@@ -1,0 +1,43 @@
+const express = require("express");
+
+const app = express();
+const {adminAuth, userAuth} = require("./middlewares/auth");
+
+// we can use "/admin" --> because we want to chk all time in admin autherization for doing any work related to admin
+
+app.use("/admin", adminAuth);
+
+
+app.get("/admin/data",(req, res)=>{
+    res.send("This is the whole admin data");
+})
+
+app.get("/admin/power", (req,res)=>{
+    res.send("This is all admin powers");
+})
+
+// we dont use err here because we are using try and catch method 
+// this is a normal to handle error particular function
+app.get("/userData",userAuth, (req,res)=>{
+    
+    try{
+        throw new Error("Thhhhhhhhh");
+        res.status(200).send("This is the whole user data");
+     }catch(err){
+        res.status(500).send("Error in this code so pls chk it");
+     }
+   
+
+ 
+    
+})
+
+// globally we can handle error using it
+// app.use("/",(err,req,res,next)=>{
+//     if(err){
+//        res.status(500).send("Error in the code");
+//     }
+// })
+app.listen("7777", ()=>{
+console.log("Server is listening on 7777");
+})
