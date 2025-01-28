@@ -2,7 +2,8 @@ const express = require("express");
 const connectDB = require("./config/Database")
 const app = express();
 const User = require("./models/user")
-
+const {validateSignUpData} = require("./utils/validator")
+const bcrypt = require('bcrypt');
 // express.json() --> it is a middleware which is used to convert json data to js object
 app.use(express.json());
 
@@ -14,17 +15,35 @@ app.post("/signup",async (req,res)=>{
     //     emailId:"shlok30jain@gmail.com",
     //     password:"Shlok30",
     // });
+    try{
+        // validation of data
+        validateSignUpData(req);
+        const {firstName, lastName, emailId, password} = req.body;
+        // encryption
 
-    const user  = new User(req.body);
+        const passwordHash = await bcrypt.hash(password,10);
+        console.log(passwordHash);
+
+        // now we insert our data with validatio
+    //    const user  = new User(req.body);
+    const user  = new User({
+        firstName,
+        lastName,
+        emailId,
+        password : passwordHash,
+    });
+
   
- try{
+
     await user.save();
     res.send("User created successfully");
  }catch(err){
-      res.send("User is not created due to some issue");
+      res.send("User is not created due to some issue - "+ err);
  }
 
 })
+
+
 
 
 // get user by email
@@ -81,14 +100,19 @@ app.delete("/user", async (req,res)=>{
 })
 
 // update user by their id
-app.patch("/user", async (req,res)=>{
-    const userId = req.body._id;
+app.patch("/user/:userId", async (req,res)=>{
+    const userId = req.params?.userId;
     const data = req.body;
     try{
-       const users = await User.findByIdAndUpdate(userId, data);
+        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "skills", "age"];
+        const isUpdateAllowed = Object.keys(data).every((k)=> ALLOWED_UPDATES.includes(k));
+        if(! isUpdateAllowed){
+            throw new Error("Update not allowed");
+        }
+       const users = await User.findByIdAndUpdate(userId, data, { runValidators: true, context: 'query' });
        res.send("User update Successfully")
     }catch(err){
-        res.status(501).send("Something went wrong");
+        res.status(501).send("Update Failed " + err.message);
     }
 })
 
